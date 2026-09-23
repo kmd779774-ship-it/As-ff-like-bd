@@ -1,0 +1,1526 @@
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Game Top-Up Store</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-purple: #7B61FF;
+            --light-purple: #E9E7FF;
+            --background-color: #F7F7FF;
+            --card-bg-color: #ffffff;
+            --primary-text-color: #2D3748;
+            --secondary-text-color: #718096;
+            --accent-green: #38E4D8;
+            --accent-red: #EF4444;
+            --border-radius-large: 24px;
+            --border-radius-medium: 16px;
+            --soft-shadow: 0 10px 30px rgba(123, 97, 255, 0.09);
+            --font-family: 'Poppins', sans-serif;
+        }
+
+        /* ডার্ক মোড স্টাইল */
+        body.dark-mode {
+            --background-color: #1A202C;
+            --card-bg-color: #2D3748;
+            --primary-text-color: #F7FAFC;
+            --secondary-text-color: #A0AEC0;
+            --light-purple: #4A5568;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--primary-text-color);
+            height: 100vh;
+            overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .auth-container, .app-container {
+            position: relative; width: 100%; height: 100vh;
+            max-width: 450px; margin: auto; overflow: hidden;
+            background-color: var(--background-color);
+        }
+        .app-container { display: none; }
+
+        .screen {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: var(--background-color);
+            transform: translateX(100%);
+            transition: transform 0.35s ease-in-out;
+            overflow-y: auto; padding: 20px;
+            padding-bottom: 110px;
+        }
+        .screen.active { transform: translateX(0); }
+        #homeScreen, #loginScreen { transform: translateX(0); }
+
+        .auth-container { display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-wrapper { width: 100%; }
+        .auth-logo-container { text-align: center; margin-bottom: 40px; }
+        .auth-logo-container h1 { font-size: 36px; font-weight: 700; color: var(--primary-purple); }
+        .auth-logo-container img { max-height: 60px; max-width: 250px; }
+
+        .auth-form { width: 100%; padding: 30px; border-radius: var(--border-radius-large); background-color: var(--card-bg-color); box-shadow: var(--soft-shadow); }
+        .auth-form h2 { text-align: center; margin-bottom: 25px; font-weight: 600; color: var(--primary-text-color); }
+        .auth-form .input-group { margin-bottom: 20px; }
+        .auth-form .input-group input { width: 100%; padding: 15px; background-color: var(--background-color); border: 1px solid #E2E8F0; border-radius: var(--border-radius-medium); font-size: 16px; color: var(--primary-text-color);}
+        .auth-form .form-link { text-align: center; margin-top: 20px; font-size: 14px; color: var(--secondary-text-color); }
+        .auth-form .form-link span { color: var(--primary-purple); cursor: pointer; font-weight: 600; }
+
+        .section-title { font-size: 20px; font-weight: 600; margin: 25px 0 15px 0; }
+        .btn { display: block; width: 100%; background: var(--primary-purple); color: white; border: none; padding: 16px; border-radius: var(--border-radius-medium); font-size: 16px; font-weight: 600; cursor: pointer; text-align: center; transition: all 0.3s; box-shadow: 0 5px 15px rgba(123, 97, 255, 0.3); }
+        .btn:hover { background-color: #6a50e4; transform: translateY(-2px); }
+        .btn-danger { background: var(--accent-red); }
+        .btn-secondary { background: var(--secondary-text-color); }
+        .action-buttons { display: flex; gap: 10px; margin-top: 20px; margin-bottom: 10px;}
+
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; margin-bottom: 20px; }
+        .header .greeting h3 { font-size: 24px; font-weight: 600; }
+        .header .greeting p { font-size: 16px; color: var(--secondary-text-color); }
+        .header .profile-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 2px solid var(--primary-purple); }
+        .header-right-icons { display: flex; align-items: center; gap: 15px; }
+
+        .notice-card { background-color: var(--light-purple); border-radius: var(--border-radius-medium); padding: 20px; margin-bottom: 25px; display: flex; align-items: center; }
+        .notice-card i { font-size: 24px; color: var(--primary-purple); margin-right: 15px; }
+        .notice-card p { font-size: 14px; line-height: 1.5; color: var(--primary-text-color); }
+
+        .slider-container { width: 100%; height: 160px; margin-bottom: 25px; border-radius: var(--border-radius-large); overflow: hidden; position: relative; box-shadow: var(--soft-shadow); }
+        .slider { display: flex; height: 100%; transition: transform 0.5s ease-in-out; }
+        .slide { min-width: 100%; height: 100%; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .game-card {
+            background: linear-gradient(145deg, #ffffff, #f9f9ff);
+            border-radius: var(--border-radius-large);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--soft-shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        body.dark-mode .game-card { background: var(--card-bg-color); }
+        .game-card:hover { transform: translateY(-5px); }
+        .game-card .icon-wrapper {
+            width: 100%;
+            height: 140px;
+            margin: 0 auto;
+            background-color: var(--card-bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+        .game-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .game-card .game-info-container {
+            padding: 10px 15px 15px 15px;
+            background-color: var(--card-bg-color);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .game-card .game-name { font-weight: 600; font-size: 15px; margin-bottom: 5px; }
+        .game-card .game-info { font-size: 13px; color: var(--secondary-text-color); }
+
+        .page-header { display: flex; align-items: center; margin-bottom: 20px; }
+        .back-btn { font-size: 22px; cursor: pointer; margin-right: 15px; color: var(--secondary-text-color); }
+        .page-header h2 { font-size: 22px; font-weight: 600; }
+        .game-banner { width: 100%; height: 140px; object-fit: cover; border-radius: var(--border-radius-large); margin-bottom: 20px; }
+        .topup-section { background-color: var(--card-bg-color); border-radius: var(--border-radius-large); padding: 20px; margin-bottom: 20px; box-shadow: var(--soft-shadow); }
+        .title { font-size: 16px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; }
+        .step-number { background: var(--light-purple); color: var(--primary-purple); border-radius: 50%; width: 30px; height: 30px; display: inline-flex; justify-content: center; align-items: center; font-weight: 700; margin-right: 12px; font-size: 14px; }
+        .input-group input { width: 100%; padding: 14px; background-color: var(--background-color); border: 1px solid #E2E8F0; border-radius: var(--border-radius-medium); color: var(--primary-text-color); font-size: 16px; }
+        body.dark-mode .input-group input { border-color: #4A5568; }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; }
+        
+        .package-grid, .payment-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .package-item { background-color: var(--background-color); border: 2px solid transparent; border-radius: var(--border-radius-medium); padding: 15px; cursor: pointer; transition: all 0.2s; }
+        
+        .payment-item { 
+            padding: 10px;
+            min-height: 100px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px; 
+            background-color: var(--background-color); 
+            border: 2px solid transparent; 
+            border-radius: var(--border-radius-medium); 
+            cursor: pointer; 
+            transition: all 0.2s;
+        }
+        .payment-item:hover, .package-item:hover { transform: scale(1.03); }
+        .package-item.selected, .payment-item.selected { border-color: var(--primary-purple); background-color: var(--light-purple); }
+        
+        .package-item .amount { font-weight: 600; font-size: 16px; text-align: center; }
+        .package-item .price { color: var(--primary-purple); font-weight: 600; font-size: 14px; text-align: center;}
+        
+        .payment-item img { 
+            max-height: 50px; 
+            width: auto;
+            object-fit: contain; 
+        }
+        .payment-item span {
+            font-size: 12px; 
+            font-weight: 500;
+            color: var(--primary-text-color);
+        }
+        body.dark-mode .payment-item span {
+             color: var(--primary-text-color);
+        }
+
+        /* ওয়ালেট ব্যালেন্স ইনফো স্টাইল */
+        .wallet-balance-info {
+            background-color: var(--light-purple);
+            padding: 15px;
+            border-radius: var(--border-radius-medium);
+            margin-top: 15px;
+            text-align: center;
+            border: 1px solid var(--primary-purple);
+        }
+        .wallet-balance-info p {
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: var(--primary-text-color);
+        }
+
+        .profile-card { text-align: center; margin-bottom: 25px; }
+        .profile-avatar-large { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 0 auto 15px; border: 4px solid var(--primary-purple); box-shadow: var(--soft-shadow); }
+        .profile-name { font-size: 22px; font-weight: 600; }
+        .profile-id { font-size: 14px; color: var(--secondary-text-color); margin-top: 4px; }
+
+        .wallet-card { background: linear-gradient(135deg, var(--primary-purple), #9f8eff); color: white; padding: 30px; border-radius: var(--border-radius-large); text-align: center; margin-bottom: 25px; }
+        .wallet-card p { font-size: 16px; opacity: 0.8; }
+        .wallet-card h1 { font-size: 44px; margin: 10px 0; }
+        .wallet-card .btn { background: rgba(255,255,255,0.2); box-shadow: none; width: auto; padding: 12px 25px; margin-top: 10px; }
+
+        .profile-menu-item { display: flex; align-items: center; background-color: var(--card-bg-color); padding: 18px 20px; margin-bottom: 12px; border-radius: var(--border-radius-medium); cursor: pointer; box-shadow: var(--soft-shadow); transition: all 0.2s; }
+        .profile-menu-item:hover { transform: translateX(5px); background-color: var(--light-purple); }
+        .profile-menu-item i { width: 30px; margin-right: 15px; text-align: center; font-size: 18px; color: var(--primary-purple); }
+        .profile-menu-item span { font-weight: 500; }
+
+        .details-card { background-color: var(--card-bg-color); border-radius: var(--border-radius-large); padding: 25px; text-align: center; box-shadow: var(--soft-shadow); }
+        .details-card .icon { font-size: 50px; color: var(--accent-green); margin-bottom: 15px; }
+        .details-card h2 { font-size: 24px; margin-bottom: 10px; }
+        .details-card p { color: var(--secondary-text-color); margin-bottom: 25px; }
+        .summary { text-align: left; }
+        .summary-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; }
+        body.dark-mode .summary-item { border-color: #4A5568; }
+        .summary-item:last-child { border-bottom: none; }
+        .summary-item span { color: var(--secondary-text-color); }
+        .summary-item strong { color: var(--primary-text-color); }
+
+        .bottom-nav { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; display: flex; justify-content: space-around; background-color: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); padding: 10px 0; border-radius: var(--border-radius-large); box-shadow: 0 10px 40px rgba(123, 97, 255, 0.2); z-index: 1000; border: 1px solid rgba(255,255,255,0.3); }
+        body.dark-mode .bottom-nav { background-color: rgba(45, 55, 72, 0.8); border-color: rgba(255, 255, 255, 0.1); }
+        .nav-item { cursor: pointer; display: flex; flex-direction: column; align-items: center; color: var(--secondary-text-color); flex: 1; position: relative; }
+        .nav-item i { font-size: 22px; margin-bottom: 4px; transition: all 0.3s; }
+        .nav-item span { font-size: 11px; font-weight: 500; }
+        .nav-item.active { color: var(--primary-purple); }
+        .nav-item-center { margin-top: -25px; }
+        .nav-item-center .icon-bg { width: 55px; height: 55px; background: var(--primary-purple); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(123, 97, 255, 0.4); margin-bottom: 8px; border: 4px solid var(--background-color); }
+        .nav-item-center .icon-bg i { color: white; font-size: 22px; margin: 0; }
+
+        .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; color: white; }
+        .status-Pending { background-color: #F59E0B; }
+        .status-Approved, .status-Completed { background-color: #10B981; }
+        .status-Rejected, .status-Canceled { background-color: var(--accent-red); }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--secondary-text-color);
+        }
+        .empty-state i {
+            font-size: 60px;
+            margin-bottom: 20px;
+            display: block;
+            color: var(--light-purple);
+        }
+        .empty-state p {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .theme-switch-container { display: flex; justify-content: space-between; align-items: center; }
+        .theme-switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .theme-switch input { opacity: 0; width: 0; height: 0; }
+        .slider-track { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 28px; }
+        .slider-track:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider-track { background-color: var(--primary-purple); }
+        input:checked + .slider-track:before { transform: translateX(22px); }
+
+        .support-fab {
+            position: fixed;
+            bottom: 100px; /* কিছুটা উপরে নেয়া হয়েছে */
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-purple);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1001;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1002;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: var(--card-bg-color);
+            padding: 20px;
+            border-radius: var(--border-radius-large);
+            width: 90%;
+            max-width: 400px;
+            box-shadow: var(--soft-shadow);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        body.dark-mode .modal-header { border-color: #4A5568; }
+        .modal-header h2 { font-size: 20px; }
+        .close-btn { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
+
+        /* Support Chat Modal */
+        #supportModal .modal-content {
+            display: flex; flex-direction: column; height: 70vh;
+        }
+        .support-chat-body {
+            flex-grow: 1; overflow-y: auto; padding: 10px 0;
+        }
+        .support-chat-footer {
+            display: flex; border-top: 1px solid #eee; padding-top: 10px;
+        }
+        body.dark-mode .support-chat-footer { border-color: #4A5568; }
+        #supportMessageInput {
+            flex-grow: 1; border: none; background: transparent; padding: 10px; color: var(--primary-text-color);
+        }
+        #supportMessageInput:focus { outline: none; }
+        #sendMessageBtn {
+            background: var(--primary-purple); color: white; border: none;
+            width: 40px; height: 40px; border-radius: 50%; font-size: 16px; cursor: pointer;
+        }
+        .message {
+            padding: 8px 12px; border-radius: 16px; margin-bottom: 8px; max-width: 80%;
+            word-wrap: break-word;
+        }
+        .message a { color: inherit; text-decoration: underline; }
+        .message.user {
+            background-color: var(--primary-purple); color: white; align-self: flex-end;
+            border-bottom-right-radius: 4px; margin-left: auto;
+        }
+        .message.admin {
+            background-color: var(--light-purple); color: var(--primary-text-color); align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+         .message-container { display: flex; flex-direction: column; }
+
+        /* Popup Modal */
+        #dynamicPopup .modal-content {
+            text-align: center;
+            border-radius: var(--border-radius-medium); /* বর্ডার কমানো হয়েছে */
+        }
+        #popupImage {
+            width: 100%; max-height: 200px; object-fit: cover;
+            border-radius: var(--border-radius-medium); margin-top: 15px; display: none;
+        }
+        #popupMessage { margin-top: 15px; color: var(--secondary-text-color); }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-indicator.online { background-color: #D1FAE5; color: #065F46; }
+        .status-indicator.offline { background-color: #FEE2E2; color: #991B1B; }
+        .status-indicator .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .status-indicator.online .dot { background-color: #10B981; }
+        .status-indicator.offline .dot { background-color: #EF4444; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="screen active" id="loginScreen">
+            <div class="auth-wrapper">
+                <div class="auth-logo-container">
+                    <h1 id="authLogoText">GameStore</h1>
+                </div>
+                <div class="auth-form">
+                    <h2>স্বাগতম!</h2>
+                    <div class="input-group"> <input type="email" id="loginEmail" placeholder="আপনার ইমেইল"> </div>
+                    <div class="input-group"> <input type="password" id="loginPassword" placeholder="আপনার পাসওয়ার্ড"> </div>
+                    <button class="btn" onclick="handleLogin()">লগইন করুন</button>
+                    <p class="form-link">অ্যাকাউন্ট নেই? <span onclick="toggleAuthScreens('signUpScreen')">সাইন আপ করুন</span></p>
+                </div>
+            </div>
+        </div>
+        <div class="screen" id="signUpScreen">
+             <div class="auth-wrapper">
+                 <div class="auth-logo-container">
+                    <h1 id="authLogoTextSignUp">GameStore</h1>
+                </div>
+                <div class="auth-form">
+                    <h2>নতুন অ্যাকাউন্ট তৈরি করুন</h2>
+                    <div class="input-group"> <input type="text" id="signUpName" placeholder="আপনার সম্পূর্ণ নাম"> </div>
+                    <div class="input-group"> <input type="email" id="signUpEmail" placeholder="আপনার ইমেইল"> </div>
+                    <div class="input-group"> <input type="password" id="signUpPassword" placeholder="নতুন পাসওয়ার্ড দিন"> </div>
+                    <button class="btn" onclick="handleSignUp()">সাইন আপ</button>
+                    <p class="form-link"> ইতোমধ্যে অ্যাকাউন্ট আছে? <span onclick="toggleAuthScreens('loginScreen')">লগইন করুন</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Screen 1: Home Page -->
+        <div class="screen active" id="homeScreen">
+            <header class="header">
+                <div class="greeting">
+                    <h3 id="greetingName">স্বাগতম!</h3>
+                    <p>আপনার পছন্দের গেমটি বেছে নিন</p>
+                </div>
+                <div class="header-right-icons">
+                     <div id="onlineStatus" class="status-indicator offline">
+                        <span class="dot"></span>
+                        <span id="onlineStatusText">Offline</span>
+                    </div>
+                    <img id="headerProfileAvatar" src="" alt="Avatar" class="profile-avatar" style="display: none;" onclick="showScreen('profileScreen', document.querySelectorAll('.nav-item')[4])">
+                </div>
+            </header>
+
+            <div class="slider-container">
+                <div class="slider">
+                    <!-- Dynamic slider images will be loaded here -->
+                </div>
+            </div>
+             <div class="notice-card" id="noticeCardContainer" style="display: none;">
+                <i class="fa-solid fa-bullhorn"></i>
+                <p id="noticeCardText"></p>
+            </div>
+            <h2 class="section-title">জনপ্রিয় গেমসমূহ</h2>
+            <div class="game-grid"></div>
+        </div>
+
+        <!-- Screen 2: Top-Up Page -->
+        <div class="screen" id="topupScreen">
+            <header class="page-header"><i class="fa-solid fa-arrow-left back-btn" onclick="showScreen('homeScreen', document.querySelector('.nav-item'))"></i><h2 id="gameTitle"></h2></header>
+            <img id="gameBanner" src="" alt="Game Banner" class="game-banner">
+            <div class="topup-section">
+                <h3 class="title"><span class="step-number">1</span>আপনার প্লেয়ার আইডি দিন</h3>
+                <div class="input-group"><input type="text" id="playerId" placeholder="এখানে প্লেয়ার আইডি লিখুন"></div>
+            </div>
+            <div class="topup-section">
+                <h3 class="title"><span class="step-number">2</span>রিচার্জ অ্যামাউন্ট বেছে নিন</h3>
+                <div class="package-grid" id="packageGrid"></div>
+            </div>
+            <div class="topup-section">
+                <h3 class="title"><span class="step-number">3</span>পেমেন্ট মেথড বেছে নিন</h3>
+                <div class="payment-grid" id="topupPaymentGrid">
+                    <!-- Payment methods will be loaded here dynamically -->
+                </div>
+                 <div id="paymentDetailsSection" style="display: none; margin-top: 20px;">
+                    <!-- Payment input fields will be injected here -->
+                </div>
+            </div>
+            <button class="btn" onclick="processOrder()">এখুনি কিনুন</button>
+        </div>
+
+        <!-- Screen 3: Wallet Screen -->
+        <div class="screen" id="walletScreen">
+            <header class="page-header"><h2 style="margin: auto;">আমার ওয়ালেট</h2></header>
+            <div class="wallet-card">
+                <p>আপনার বর্তমান ব্যালেন্স</p>
+                <h1 id="profileWalletBalance">৳ 0.00</h1>
+                 <button class="btn" onclick="showScreen('addMoneyScreen', document.querySelectorAll('.nav-item')[2])">অ্যাড মানি</button>
+            </div>
+            <div class="topup-section">
+                <h3 class="title">মানি রিকোয়েস্ট হিস্টোরি</h3>
+                <div id="moneyRequestHistory"></div>
+            </div>
+        </div>
+
+        <!-- Screen 4: Add Money Screen -->
+        <div class="screen" id="addMoneyScreen">
+             <header class="page-header"><i class="fa-solid fa-arrow-left back-btn" onclick="showScreen('walletScreen', document.querySelectorAll('.nav-item')[1])"></i><h2>অ্যাড মানি</h2></header>
+             <div class="topup-section">
+                <h3 class="title"><span class="step-number">1</span>অ্যামাউন্ট লিখুন</h3>
+                <div class="input-group"> <input type="number" id="addMoneyAmount" placeholder="e.g., 500"> </div>
+            </div>
+            <div class="topup-section">
+                <h3 class="title"><span class="step-number">2</span>পেমেন্ট মেথড বেছে নিন</h3>
+                <div class="payment-grid" id="addMoneyPaymentGrid">
+                    <!-- Add Money payment methods will be loaded here dynamically -->
+                </div>
+                 <div id="addMoneyPaymentDetailsSection" style="display: none; margin-top: 20px;">
+                    <p style="text-align: center; font-weight: 600; margin-bottom: 10px;">
+                        নিচের নম্বরে টাকা পাঠান: <strong id="addMoneyAdminPaymentNumber" style="color: var(--primary-purple); font-size: 18px;"></strong>
+                    </p>
+                    <div class="input-group" style="margin-top: 15px;">
+                        <label for="addMoneyUserPaymentNumber">আপনার পেমেন্ট নম্বর</label>
+                        <input type="tel" id="addMoneyUserPaymentNumber" placeholder="যে নম্বর থেকে টাকা পাঠিয়েছেন">
+                    </div>
+                    <div class="input-group">
+                        <label for="addMoneyTransactionId">ট্রানজেকশন আইডি</label>
+                        <input type="text" id="addMoneyTransactionId" placeholder="টাকা পাঠানোর পর প্রাপ্ত আইডি">
+                    </div>
+                </div>
+            </div>
+            <button class="btn" onclick="processAddMoneyRequest()">রিকোয়েস্ট করুন</button>
+        </div>
+
+        <!-- Screen 5: Profile Page -->
+        <div class="screen" id="profileScreen">
+            <header class="page-header"><h2 style="margin: auto;">প্রোফাইল</h2></header>
+            <div class="profile-card">
+                <img id="profileScreenAvatar" src="https://i.ibb.co/74CkxSP/avatar.png" alt="User Avatar" class="profile-avatar-large">
+                <h3 class="profile-name" id="profileNameDisplay"></h3>
+                <p class="profile-id" id="profileIdDisplay"></p>
+            </div>
+
+            <div class="profile-menu">
+                <div class="profile-menu-item" onclick="showScreen('walletScreen', document.querySelectorAll('.nav-item')[1])"><i class="fa-solid fa-wallet"></i><span>ওয়ালেট</span></div>
+                <div class="profile-menu-item" onclick="showOrderHistoryScreen(document.querySelectorAll('.nav-item')[3])"><i class="fa-solid fa-receipt"></i><span>অর্ডার হিস্টোরি</span></div>
+                <div class="profile-menu-item" onclick="toggleSettings()"><i class="fa-solid fa-cogs"></i><span>সেটিংস</span></div>
+                <div class="profile-menu-item" onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i><span>লগ আউট</span></div>
+            </div>
+            
+            <!-- নতুন সেটিংস সেকশন -->
+            <div id="settingsSection" style="display: none; margin-top: 15px;">
+                <div class="topup-section">
+                    <h3 class="title">থিম পরিবর্তন করুন</h3>
+                    <div class="theme-switch-container">
+                        <span>ডার্ক মোড</span>
+                        <label class="theme-switch">
+                            <input type="checkbox" id="theme-toggle">
+                            <span class="slider-track"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+         <!-- Screen 6: Order History -->
+        <div class="screen" id="orderHistoryScreen">
+            <header class="page-header"><h2 style="margin: auto;">মাই অর্ডার</h2></header>
+            <div id="orderHistoryContainer"></div>
+        </div>
+
+        <!-- Screen 7: Order Details Success Page -->
+        <div class="screen" id="orderDetailsScreen">
+             <header class="page-header"><i class="fa-solid fa-arrow-left back-btn" onclick="showOrderHistoryScreen(document.querySelectorAll('.nav-item')[3])"></i><h2>অর্ডার সম্পন্ন হয়েছে</h2></header>
+             <div id="orderDetailsContainer"></div>
+        </div>
+
+        <!-- Screen 8: Money Request Success Page -->
+        <div class="screen" id="moneyRequestSuccessScreen">
+            <header class="page-header"><i class="fa-solid fa-arrow-left back-btn" onclick="showScreen('walletScreen', document.querySelectorAll('.nav-item')[1])"></i><h2>রিকোয়েস্ট পাঠানো হয়েছে</h2></header>
+            <div id="moneyRequestSuccessContainer"></div>
+        </div>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="showScreen('homeScreen', this)"> <i class="fa-solid fa-house"></i> <span>হোম</span> </div>
+            <div class="nav-item" onclick="showOrderHistoryScreen(this)"> <i class="fa-solid fa-receipt"></i> <span>অর্ডার</span> </div>
+            <div class="nav-item nav-item-center" onclick="showScreen('addMoneyScreen', this)"> <div class="icon-bg"><i class="fa-solid fa-plus"></i></div> <span>অ্যাড মানি</span> </div>
+            <div class="nav-item" onclick="showScreen('walletScreen', this)"> <i class="fa-solid fa-wallet"></i> <span>ওয়ালেট</span> </div>
+            <div class="nav-item" onclick="showScreen('profileScreen', this)"> <i class="fa-regular fa-user"></i> <span>প্রোফাইল</span> </div>
+        </nav>
+        
+        <div class="support-fab" id="supportBtn"><i class="fa-solid fa-headset"></i></div>
+
+        <!-- Support Chat Modal -->
+        <div id="supportModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>সাপোর্ট চ্যাট</h2>
+                    <span class="close-btn" id="supportCloseBtn">&times;</span>
+                </div>
+                <div class="support-chat-body" id="supportChatBody">
+                    <!-- Messages will be loaded here -->
+                </div>
+                <div class="support-chat-footer">
+                    <input type="text" id="supportMessageInput" placeholder="আপনার মেসেজ লিখুন...">
+                    <button id="sendMessageBtn"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Popup Modal -->
+        <div id="dynamicPopup" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="popupTitle"></h2>
+                    <span class="close-btn" id="popupCloseBtn">&times;</span>
+                </div>
+                <img id="popupImage" src="" alt="Popup Image">
+                <p id="popupMessage"></p>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA813ETR3hxfcUqyILdr1wSVgyXI1MvvNg",
+            authDomain: "gamestore-3addc.firebaseapp.com",
+            databaseURL: "https://gamestore-3addc-default-rtdb.firebaseio.com",
+            projectId: "gamestore-3addc",
+            storageBucket: "gamestore-3addc.firebasestorage.app",
+            messagingSenderId: "243275206854",
+            appId: "1:243275206854:web:2feb8968aad9e27eb547c7"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        let currentUser = null;
+        let selectedGameData = {}, selectedPackage = null, selectedPayment = null, selectedAddMoneyPayment = null;
+        let gamesFromDB = [];
+        let paymentMethodsFromDB = [];
+        const authContainer = document.querySelector('.auth-container');
+        const appContainer = document.querySelector('.app-container');
+        const EDIT_WINDOW_MS = 3 * 60 * 1000; 
+
+        const themeToggle = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme) {
+            document.body.classList.add(currentTheme);
+            if (currentTheme === 'dark-mode') {
+                themeToggle.checked = true;
+            }
+        }
+
+        themeToggle.addEventListener('change', () => {
+            if (themeToggle.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light-mode');
+            }
+        });
+
+        function toggleSettings() {
+            const settingsSection = document.getElementById('settingsSection');
+            settingsSection.style.display = settingsSection.style.display === 'none' ? 'block' : 'none';
+        }
+
+        loadBranding();
+
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = user;
+                db.collection('users').doc(currentUser.uid).onSnapshot(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        updateProfileDisplay(data.name, data.profileId, data.photoURL);
+                        updateWalletDisplay(data.walletBalance);
+                        document.getElementById('greetingName').innerText = `হাই, ${data.name.split(' ')[0]}`;
+                    }
+                });
+
+                await loadGamesFromFirestore();
+                await loadPaymentMethods();
+
+                authContainer.style.display = 'none';
+                appContainer.style.display = 'block';
+
+                initializeAddMoneyScreen();
+                loadMoneyRequestHistory();
+                loadOrderHistory();
+                loadSlider();
+                initializeNoticeListener();
+                initializeOnlineStatusListener();
+                initializePopupListener();
+            } else {
+                currentUser = null;
+                authContainer.style.display = 'flex';
+                appContainer.style.display = 'none';
+            }
+        });
+
+        async function loadPaymentMethods() {
+            try {
+                const snapshot = await db.collection('paymentMethods').get();
+                paymentMethodsFromDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                populatePaymentGrids();
+            } catch (error) {
+                console.error("Error fetching payment methods: ", error);
+            }
+        }
+        
+        function populatePaymentGrids() {
+            const topupGrid = document.getElementById('topupPaymentGrid');
+            const addMoneyGrid = document.getElementById('addMoneyPaymentGrid');
+            topupGrid.innerHTML = '';
+            addMoneyGrid.innerHTML = '';
+
+            const walletOptionHtml = `
+                <div class="payment-item" data-payment-id="wallet" data-type="wallet">
+                    <i class="fa-solid fa-wallet" style="font-size: 24px; color: var(--primary-purple); margin-bottom: 5px;"></i>
+                    <span>My Wallet</span>
+                </div>`;
+            topupGrid.innerHTML += walletOptionHtml;
+
+            paymentMethodsFromDB.forEach(method => {
+                const itemHtml = `<div class="payment-item" data-payment-id="${method.id}" data-type="manual">
+                                    <img src="${method.logoUrl}" alt="${method.name}">
+                                    <span>${method.name}</span>
+                                  </div>`;
+                topupGrid.innerHTML += itemHtml; 
+                addMoneyGrid.innerHTML += itemHtml; 
+            });
+            
+            initializePaymentSelection();
+        }
+
+        function initializePaymentSelection() {
+            document.querySelectorAll('#topupPaymentGrid .payment-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('#topupPaymentGrid .payment-item.selected').forEach(el => el.classList.remove('selected'));
+                    item.classList.add('selected');
+                    
+                    const type = item.getAttribute('data-type');
+                    const detailsSection = document.getElementById('paymentDetailsSection');
+                    detailsSection.innerHTML = ''; 
+                    detailsSection.style.display = 'block';
+
+                    if (type === 'wallet') {
+                        selectedPayment = { name: 'Wallet', type: 'wallet' };
+                        detailsSection.innerHTML = `
+                            <div class="wallet-balance-info">
+                                <p>প্যাকেজ মূল্য: <strong id="displayPackagePrice">${selectedPackage ? selectedPackage.price : 0} টাকা</strong></p>
+                                <p>আপনার ওয়ালেট থেকে টাকা কাটা হবে।</p>
+                            </div>
+                        `;
+                    } else {
+                        const selectedMethodId = item.dataset.paymentId;
+                        const method = paymentMethodsFromDB.find(m => m.id === selectedMethodId);
+                        selectedPayment = { ...method, type: 'manual' };
+
+                        detailsSection.innerHTML = `
+                            <p style="text-align: center; font-weight: 600; margin-bottom: 10px;">
+                                নিচের নম্বরে টাকা পাঠান: <strong style="color: var(--primary-purple); font-size: 18px;">${method.number}</strong>
+                            </p>
+                            <div class="input-group" style="margin-top: 15px;">
+                                <label for="userPaymentNumber">আপনার পেমেন্ট নম্বর</label>
+                                <input type="tel" id="userPaymentNumber" placeholder="যে নম্বর থেকে টাকা পাঠিয়েছেন">
+                            </div>
+                            <div class="input-group">
+                                <label for="transactionId">ট্রানজেকশন আইডি</label>
+                                <input type="text" id="transactionId" placeholder="টাকা পাঠানোর পর প্রাপ্ত আইডি">
+                            </div>
+                        `;
+                    }
+                });
+            });
+
+            document.querySelectorAll('#addMoneyPaymentGrid .payment-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('#addMoneyPaymentGrid .payment-item.selected').forEach(el => el.classList.remove('selected'));
+                    item.classList.add('selected');
+                    const selectedMethodId = item.dataset.paymentId;
+                    const method = paymentMethodsFromDB.find(m => m.id === selectedMethodId);
+                    if (method) {
+                        selectedAddMoneyPayment = method;
+                        document.getElementById('addMoneyPaymentDetailsSection').style.display = 'block';
+                        document.getElementById('addMoneyAdminPaymentNumber').innerText = method.number;
+                    }
+                });
+            });
+        }
+
+
+        async function loadBranding() {
+            try {
+                const doc = await db.collection('settings').doc('branding').get();
+                if (!doc.exists) return;
+
+                const { appName, profileIconUrl } = doc.data();
+
+                const ids = ['', 'SignUp'];
+                ids.forEach(id => {
+                    const logoText = document.getElementById(`authLogoText${id}`);
+                    if (appName) { 
+                        logoText.innerText = appName;
+                    }
+                });
+                
+                const headerProfileAvatar = document.getElementById('headerProfileAvatar');
+                if (profileIconUrl) {
+                    headerProfileAvatar.src = profileIconUrl;
+                    headerProfileAvatar.style.display = 'block';
+                } else {
+                    headerProfileAvatar.style.display = 'none';
+                }
+
+            } catch (error) {
+                console.error("Error loading branding:", error);
+            }
+        }
+        
+        function updateProfileDisplay(name, id, photoURL) {
+            document.getElementById('profileNameDisplay').innerText = name;
+            document.getElementById('profileIdDisplay').innerText = `ID: ${id}`;
+            
+            const profileScreenAvatar = document.getElementById('profileScreenAvatar');
+            if (photoURL) {
+                profileScreenAvatar.src = photoURL;
+            } else {
+                profileScreenAvatar.src = "https://i.ibb.co/74CkxSP/avatar.png"; 
+            }
+        }
+        
+        function initializeNoticeListener() {
+            const noticeContainer = document.getElementById('noticeCardContainer');
+            const noticeText = document.getElementById('noticeCardText');
+
+            db.collection('settings').doc('notice').onSnapshot(doc => {
+                if (doc.exists && doc.data().text) {
+                    noticeText.innerText = doc.data().text;
+                    noticeContainer.style.display = 'flex';
+                } else {
+                    noticeContainer.style.display = 'none';
+                }
+            });
+        }
+
+        async function handleSignUp() {
+            const name = document.getElementById('signUpName').value;
+            const email = document.getElementById('signUpEmail').value;
+            const password = document.getElementById('signUpPassword').value;
+            if (!name || !email || !password) { alert('অনুগ্রহ করে সকল তথ্য পূরণ করুন।'); return; }
+
+            try {
+                const avatarSettingsDoc = await db.collection('settings').doc('defaultAvatars').get();
+                const defaultMaleAvatar = avatarSettingsDoc.data()?.maleAvatarUrl || "https://i.ibb.co/74CkxSP/avatar.png";
+                const defaultFemaleAvatar = avatarSettingsDoc.data()?.femaleAvatarUrl || "https://i.ibb.co/74CkxSP/avatar.png";
+
+                let assignedAvatarUrl = defaultMaleAvatar;
+                const lowerCaseName = name.toLowerCase();
+                const femaleIdentifiers = ['a', 'i', 'akter', 'begum', 'fatima', 'jannat', 'tasnim', 'nisa', 'khatun'];
+                
+                if (femaleIdentifiers.some(identifier => lowerCaseName.includes(identifier))) {
+                    assignedAvatarUrl = defaultFemaleAvatar;
+                }
+
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                await db.collection('users').doc(user.uid).set({
+                    name: name,
+                    email: email,
+                    profileId: `GS-${Math.random().toString(36).substr(2, 6)}`,
+                    walletBalance: 0,
+                    status: 'active',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    photoURL: assignedAvatarUrl 
+                });
+
+            } catch (error) { 
+                alert('সাইন আপ করতে সমস্যা হয়েছে: ' + error.message); 
+            }
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            if (!email || !password) { alert('অনুগ্রহ করে ইমেইল ও পাসওয়ার্ড দিন।'); return; }
+
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const userDoc = await db.collection('users').doc(userCredential.user.uid).get();
+
+                if (userDoc.exists && userDoc.data().status === 'blocked') {
+                    await auth.signOut();
+                    alert('আপনার অ্যাকাউন্টটি ব্লক করা হয়েছে। অনুগ্রহ করে সাপোর্টে যোগাযোগ করুন।');
+                }
+            } catch (error) {
+                alert('লগইন করতে সমস্যা হয়েছে: ' + error.message);
+            }
+        }
+
+        function handleLogout() { auth.signOut(); }
+
+        function toggleAuthScreens(screenId) {
+            document.querySelectorAll('.auth-container .screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        async function processAddMoneyRequest() {
+            const amount = parseFloat(document.getElementById('addMoneyAmount').value);
+            const userPaymentNumber = document.getElementById('addMoneyUserPaymentNumber').value;
+            const transactionId = document.getElementById('addMoneyTransactionId').value;
+
+            if (isNaN(amount) || amount <= 0 || !selectedAddMoneyPayment || !userPaymentNumber || !transactionId) {
+                alert('অনুগ্রহ করে সকল তথ্য সঠিকভাবে পূরণ করুন।');
+                return;
+            }
+
+            const requestData = {
+                userId: currentUser.uid,
+                amount: amount,
+                paymentMethod: selectedAddMoneyPayment.name,
+                adminNumber: selectedAddMoneyPayment.number,
+                userPaymentNumber: userPaymentNumber,
+                transactionId: transactionId,
+                status: 'Pending',
+                date: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                await db.collection('moneyRequests').add(requestData);
+                showMoneyRequestSuccess(requestData);
+            } catch (error) {
+                alert("রিকোয়েস্ট করতে সমস্যা হয়েছে: " + error.message);
+            }
+        }
+
+        function loadMoneyRequestHistory() {
+            const container = document.getElementById('moneyRequestHistory');
+            if (!container || !currentUser) return;
+
+            // orderBy removed to prevent index error
+            db.collection('moneyRequests').where('userId', '==', currentUser.uid)
+            .onSnapshot(querySnapshot => {
+                if (querySnapshot.empty) {
+                    container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-file-invoice-dollar"></i><p>কোনো রিকোয়েস্ট খুঁজে পাওয়া যায়নি।</p></div>`;
+                    return;
+                }
+
+                // Sorting manually in JS
+                let requests = [];
+                querySnapshot.forEach(doc => {
+                    requests.push({ id: doc.id, ...doc.data() });
+                });
+                
+                // Sort by date descending
+                requests.sort((a, b) => {
+                     const dateA = a.date ? a.date.seconds : 0;
+                     const dateB = b.date ? b.date.seconds : 0;
+                     return dateB - dateA;
+                });
+
+                let historyHtml = '';
+                requests.forEach(request => {
+                    const requestId = request.id;
+                    const requestDate = request.date ? request.date.toDate() : new Date();
+                    const isEditable = (new Date() - requestDate) < EDIT_WINDOW_MS && request.status === 'Pending';
+
+                    let buttons = '';
+                    if (request.status === 'Pending') {
+                        buttons = `<div class="action-buttons">
+                                ${isEditable ? `<button class="btn btn-secondary" onclick="editMoneyRequest('${requestId}')">এডিট</button>` : ''}
+                                <button class="btn btn-danger" onclick="cancelMoneyRequest('${requestId}')">মুছে ফেলুন</button>
+                            </div>`;
+                    }
+
+                    historyHtml += `<div class="topup-section" style="margin-bottom: 10px;">
+                        <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom: 8px;">
+                            <span>৳ ${request.amount}</span>
+                            <span class="status-badge status-${request.status}">${request.status}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 8px;"><span>পেমেন্ট:</span><strong>${request.paymentMethod}</strong></div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 8px;"><span>নম্বর:</span><strong>${request.userPaymentNumber}</strong></div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 8px;"><span>ট্রানজেকশন আইডি:</span><strong>${request.transactionId}</strong></div>
+                        <div style="display:flex; justify-content:space-between;"><span>তারিখ:</span><strong>${requestDate.toLocaleString('bn-BD')}</strong></div>
+                        ${buttons}
+                    </div>`;
+                });
+                container.innerHTML = historyHtml;
+            }, error => {
+                console.error("Error loading money request history: ", error);
+                if (error.code !== 'failed-precondition') {
+                     container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-circle-exclamation"></i><p>হিস্ট্রি লোড করা যায়নি।</p></div>`;
+                }
+            });
+        }
+
+        async function processOrder() {
+            const playerId = document.getElementById('playerId').value;
+            
+            if (!playerId) { alert('দয়া করে প্লেয়ার আইডি দিন।'); return; }
+            if (!selectedPackage) { alert('দয়া করে একটি প্যাকেজ সিলেক্ট করুন।'); return; }
+            if (!selectedPayment) { alert('দয়া করে পেমেন্ট মেথড সিলেক্ট করুন।'); return; }
+
+            let orderData = {
+                userId: currentUser.uid,
+                game: selectedGameData.name,
+                package: selectedPackage.amount,
+                price: parseFloat(selectedPackage.price),
+                playerId: playerId,
+                paymentMethod: selectedPayment.name,
+                status: 'Pending',
+                date: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                if (selectedPayment.type === 'wallet') {
+                    const userRef = db.collection('users').doc(currentUser.uid);
+
+                    await db.runTransaction(async (transaction) => {
+                        const userDoc = await transaction.get(userRef);
+                        if (!userDoc.exists) { throw "User does not exist!"; }
+
+                        const userData = userDoc.data();
+                        const currentBalance = parseFloat(userData.walletBalance) || 0;
+                        const packagePrice = parseFloat(selectedPackage.price);
+
+                        if (currentBalance < packagePrice) {
+                            throw "আপনার ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই। দয়া করে 'Add Money' করুন।";
+                        }
+
+                        const newBalance = currentBalance - packagePrice;
+                        transaction.update(userRef, { walletBalance: newBalance });
+
+                        const newOrderRef = db.collection('orders').doc();
+                        orderData.transactionId = 'WALLET_PAY';
+                        orderData.userPaymentNumber = 'N/A';
+                        orderData.adminNumber = 'N/A';
+                        
+                        transaction.set(newOrderRef, orderData);
+                    });
+
+                    alert('অর্ডার সফল হয়েছে! ওয়ালেট থেকে টাকা কাটা হয়েছে।');
+                    showOrderDetails(orderData);
+
+                } else {
+                    const userPaymentNumber = document.getElementById('userPaymentNumber').value;
+                    const transactionId = document.getElementById('transactionId').value;
+
+                    if (!userPaymentNumber || !transactionId) {
+                        alert('দয়া করে পেমেন্ট নম্বর এবং ট্রানজেকশন আইডি দিন।'); return;
+                    }
+
+                    orderData.adminNumber = selectedPayment.number;
+                    orderData.userPaymentNumber = userPaymentNumber;
+                    orderData.transactionId = transactionId;
+
+                    await db.collection('orders').add(orderData);
+                    showOrderDetails(orderData);
+                }
+
+            } catch (error) {
+                if (typeof error === 'string') {
+                    alert(error);
+                } else {
+                    console.error(error);
+                    alert("অর্ডার করতে সমস্যা হয়েছে: " + error.message);
+                }
+            }
+        }
+
+        function loadOrderHistory() {
+            const container = document.getElementById('orderHistoryContainer');
+            if (!container || !currentUser) return;
+
+            // orderBy removed to prevent index error
+            db.collection('orders').where('userId', '==', currentUser.uid)
+            .onSnapshot(querySnapshot => {
+                if (querySnapshot.empty) {
+                    container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-receipt"></i><p>কোনো অর্ডার পাওয়া যায়নি।</p></div>`;
+                    return;
+                }
+
+                // Sorting manually in JS
+                let orders = [];
+                querySnapshot.forEach(doc => {
+                    orders.push({ id: doc.id, ...doc.data() });
+                });
+                
+                // Sort by date descending
+                orders.sort((a, b) => {
+                     const dateA = a.date ? a.date.seconds : 0;
+                     const dateB = b.date ? b.date.seconds : 0;
+                     return dateB - dateA;
+                });
+
+                let historyHtml = '';
+                orders.forEach(order => {
+                    const orderId = order.id;
+                    const orderDate = order.date ? order.date.toDate() : new Date();
+                    const isEditable = (new Date() - orderDate) < EDIT_WINDOW_MS && order.status === 'Pending';
+
+                    let buttons = '';
+                    if (order.status === 'Pending') {
+                        buttons = `<div class="action-buttons">
+                                ${isEditable ? `<button class="btn btn-secondary" onclick="editOrder('${orderId}')">এডিট</button>` : ''}
+                                <button class="btn btn-danger" onclick="cancelOrder('${orderId}')">মুছে ফেলুন</button>
+                            </div>`;
+                    }
+
+                    historyHtml += `<div class="topup-section">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                            <span>গেম: <strong>${order.game}</strong></span>
+                            <span class="status-badge status-${order.status}">${order.status}</span>
+                        </div>
+                        <p style="display:flex; justify-content:space-between; margin-bottom: 8px;"><span>প্যাকেজ:</span><strong>${order.package}</strong></p>
+                        <p style="display:flex; justify-content:space-between; margin-bottom: 8px;"><span>প্লেয়ার আইডি:</span><strong>${order.playerId}</strong></p>
+                         <p style="display:flex; justify-content:space-between; margin-bottom: 8px;"><span>ট্রানজেকশন আইডি:</span><strong>${order.transactionId || 'N/A'}</strong></p>
+                        <p style="display:flex; justify-content:space-between;"><span>তারিখ:</span><strong>${orderDate.toLocaleString('bn-BD')}</strong></p>
+                        ${buttons}
+                    </div>`;
+                });
+                 container.innerHTML = historyHtml;
+            }, error => {
+                console.error("Error loading order history: ", error);
+                if (error.code !== 'failed-precondition') {
+                    container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-circle-exclamation"></i><p>হিস্ট্রি লোড করা যায়নি।</p></div>`;
+                }
+            });
+        }
+
+        async function cancelOrder(orderId) {
+            if (!confirm('আপনি কি নিশ্চিতভাবে এই অর্ডারটি মুছে ফেলতে চান? যদি ওয়ালেট দিয়ে পেমেন্ট করে থাকেন, তবে টাকা ফেরত দেওয়া হবে।')) {
+                return;
+            }
+
+            try {
+                await db.runTransaction(async (transaction) => {
+                    const orderRef = db.collection('orders').doc(orderId);
+                    const orderDoc = await transaction.get(orderRef);
+
+                    if (!orderDoc.exists) {
+                        throw "অর্ডারটি পাওয়া যায়নি।";
+                    }
+
+                    const orderData = orderDoc.data();
+
+                    // স্ট্যাটাস চেক
+                    if (orderData.status !== 'Pending') {
+                        throw "এই অর্ডারটি এখন আর ক্যানসেল করা যাবে না।";
+                    }
+
+                    // ওয়ালেট পেমেন্ট চেক (transactionId বা paymentMethod দিয়ে)
+                    if (orderData.transactionId === 'WALLET_PAY' || orderData.paymentMethod === 'Wallet') {
+                        const userRef = db.collection('users').doc(orderData.userId);
+                        const userDoc = await transaction.get(userRef);
+
+                        if (userDoc.exists) {
+                            const currentBalance = parseFloat(userDoc.data().walletBalance) || 0;
+                            const refundAmount = parseFloat(orderData.price);
+                            
+                            // ব্যালেন্স রিফান্ড
+                            transaction.update(userRef, { 
+                                walletBalance: currentBalance + refundAmount 
+                            });
+                        }
+                    }
+
+                    // অর্ডার ডিলিট
+                    transaction.delete(orderRef);
+                });
+
+                alert('অর্ডারটি সফলভাবে বাতিল করা হয়েছে এবং প্রযোজ্য ক্ষেত্রে ওয়ালেটে টাকা ফেরত দেওয়া হয়েছে।');
+
+            } catch (error) {
+                console.error("Cancellation Error: ", error);
+                alert('সমস্যা হয়েছে: ' + (error.message || error));
+            }
+        }
+
+        async function editOrder(orderId) {
+            try {
+                const doc = await db.collection('orders').doc(orderId).get();
+                if (!doc.exists) { alert('অর্ডার পাওয়া যায়নি!'); return; }
+                const order = doc.data();
+                const newPlayerId = prompt('আপনার নতুন প্লেয়ার আইডি দিন:', order.playerId);
+                const newTransactionId = prompt('নতুন ট্রানজেকশন আইডি দিন:', order.transactionId);
+
+                const updates = {};
+                 if (newPlayerId && newPlayerId.trim() !== '' && newPlayerId !== order.playerId) {
+                    updates.playerId = newPlayerId;
+                }
+                if (newTransactionId && newTransactionId.trim() !== '' && newTransactionId !== order.transactionId) {
+                    updates.transactionId = newTransactionId;
+                }
+                if (Object.keys(updates).length > 0) {
+                    await db.collection('orders').doc(orderId).update(updates);
+                    alert('অর্ডার সফলভাবে আপডেট করা হয়েছে!');
+                }
+            } catch (e) { alert('আপডেট করতে সমস্যা হয়েছে: ' + e.message); }
+        }
+
+        function cancelMoneyRequest(requestId) {
+            if (confirm('আপনি কি নিশ্চিতভাবে এই রিকোয়েস্টটি মুছে ফেলতে চান?')) {
+                db.collection('moneyRequests').doc(requestId).delete()
+                  .then(() => alert('রিকোয়েস্টটি সফলভাবে মুছে ফেলা হয়েছে।'))
+                  .catch(e => alert('সমস্যা হয়েছে: ' + e.message));
+            }
+        }
+
+        async function editMoneyRequest(requestId) {
+            try {
+                const doc = await db.collection('moneyRequests').doc(requestId).get();
+                if (!doc.exists) { alert('রিকোয়েস্ট পাওয়া যায়নি!'); return; }
+                const request = doc.data();
+                const newAmount = prompt('নতুন অ্যামাউন্ট লিখুন:', request.amount);
+                const newNumber = prompt('নতুন পেমেন্ট নম্বর দিন:', request.userPaymentNumber);
+                const newTransactionId = prompt('নতুন ট্রানজেকশন আইডি দিন:', request.transactionId);
+
+                const updates = {};
+                if (newAmount && parseFloat(newAmount) > 0 && parseFloat(newAmount) !== request.amount) {
+                    updates.amount = parseFloat(newAmount);
+                }
+                if (newNumber && newNumber.trim() !== '' && newNumber !== request.userPaymentNumber) {
+                    updates.userPaymentNumber = newNumber;
+                }
+                 if (newTransactionId && newTransactionId.trim() !== '' && newTransactionId !== request.transactionId) {
+                    updates.transactionId = newTransactionId;
+                }
+                if (Object.keys(updates).length > 0) {
+                    await db.collection('moneyRequests').doc(requestId).update(updates);
+                    alert('রিকোয়েস্ট সফলভাবে আপডেট করা হয়েছে!');
+                }
+            } catch (e) { alert('আপডেট করতে সমস্যা হয়েছে: ' + e.message); }
+        }
+
+        function showScreen(screenId, navElement) {
+            document.querySelectorAll('.app-container .screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            if (navElement) {
+                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                navElement.classList.add('active');
+            }
+        }
+
+        function updateWalletDisplay(balance) {
+            const formattedBalance = `৳ ${parseFloat(balance || 0).toFixed(2)}`;
+            document.getElementById('profileWalletBalance').innerText = formattedBalance;
+        }
+
+        function showOrderHistoryScreen(navElement) { showScreen('orderHistoryScreen', navElement); }
+
+        function showOrderDetails(orderData) {
+            const container = document.getElementById('orderDetailsContainer');
+            container.innerHTML = `<div class="details-card">
+                    <div class="icon"><i class="fa-solid fa-check-circle"></i></div>
+                    <h2>অর্ডারটি সফল হয়েছে!</h2>
+                    <p>আপনার অর্ডারটি প্রক্রিয়া করা হচ্ছে। বিস্তারিত নিচে দেখুন।</p>
+                    <div class="summary">
+                        <div class="summary-item"><span>গেম:</span><strong>${orderData.game}</strong></div>
+                        <div class="summary-item"><span>প্যাকেজ:</span><strong>${orderData.package}</strong></div>
+                        <div class="summary-item"><span>প্লেয়ার আইডি:</span><strong>${orderData.playerId}</strong></div>
+                        <div class="summary-item"><span>মূল্য:</span><strong>${orderData.price}</strong></div>
+                    </div>
+                </div>`;
+            showScreen('orderDetailsScreen');
+        }
+
+        function showMoneyRequestSuccess(requestData) {
+            const container = document.getElementById('moneyRequestSuccessContainer');
+            container.innerHTML = `<div class="details-card">
+                    <div class="icon"><i class="fa-solid fa-paper-plane"></i></div>
+                    <h2>রিকোয়েস্ট পাঠানো হয়েছে!</h2>
+                    <p>আপনার রিকোয়েস্টটি পর্যালোচনার জন্য পাঠানো হয়েছে।</p>
+                    <div class="summary">
+                        <div class="summary-item"><span>অ্যামাউন্ট:</span><strong>৳ ${requestData.amount.toFixed(2)}</strong></div>
+                        <div class="summary-item"><span>পেমেন্ট মেথড:</span><strong>${requestData.paymentMethod}</strong></div>
+                        <div class="summary-item"><span>আপনার নম্বর:</span><strong>${requestData.userPaymentNumber}</strong></div>
+                        <div class="summary-item"><span>ট্রানজেকশন আইডি:</span><strong>${requestData.transactionId}</strong></div>
+                    </div>
+                </div>`;
+            showScreen('moneyRequestSuccessScreen');
+        }
+
+        function initializeAddMoneyScreen() {
+            document.getElementById('addMoneyAmount').value = '';
+            document.getElementById('addMoneyUserPaymentNumber').value = '';
+            document.getElementById('addMoneyTransactionId').value = '';
+            document.getElementById('addMoneyPaymentDetailsSection').style.display = 'none';
+            selectedAddMoneyPayment = null;
+            document.querySelectorAll('#addMoneyPaymentGrid .payment-item.selected').forEach(el => el.classList.remove('selected'));
+        }
+
+        async function loadGamesFromFirestore() {
+            try {
+                const snapshot = await db.collection('games').where('status', '==', 'active').get();
+                gamesFromDB = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                populateGameGrid();
+            } catch (error) { console.error("Error fetching games: ", error); }
+        }
+
+        function populateGameGrid() {
+            const grid = document.querySelector('#homeScreen .game-grid');
+            grid.innerHTML = '';
+            gamesFromDB.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                card.innerHTML = `<div class="icon-wrapper"><img src="${game.logo}" alt="${game.name}"></div>
+                                  <div class="game-info-container">
+                                      <div class="game-name">${game.name}</div>
+                                      <div class="game-info">টপ-আপ করুন</div>
+                                  </div>`;
+                card.onclick = () => selectGame(game);
+                grid.appendChild(card);
+            });
+        }
+
+        function selectGame(game) {
+            selectedGameData = game;
+            document.getElementById('gameTitle').innerText = game.name;
+            document.getElementById('gameBanner').src = game.banner;
+
+            const packageGrid = document.getElementById('packageGrid');
+            packageGrid.innerHTML = '';
+
+            if (Array.isArray(game.packages)) {
+                game.packages.forEach(pkg => {
+                    const item = document.createElement('div');
+                    item.className = 'package-item';
+                    item.innerHTML = `<div class="amount">${pkg.amount}</div><div class="price">${pkg.price}</div>`;
+                    item.onclick = () => {
+                        document.querySelectorAll('.package-item.selected').forEach(el => el.classList.remove('selected'));
+                        item.classList.add('selected');
+                        selectedPackage = pkg;
+                        
+                        // ডায়নামিক প্রাইস আপডেট
+                        const priceDisplay = document.getElementById('displayPackagePrice');
+                        if(priceDisplay) {
+                             priceDisplay.innerText = `${pkg.price} টাকা`;
+                        }
+                    };
+                    packageGrid.appendChild(item);
+                });
+            }
+
+            resetTopupSelections();
+            showScreen('topupScreen');
+        }
+
+        function resetTopupSelections() {
+            const playerIdInput = document.getElementById('playerId');
+            if (playerIdInput) playerIdInput.value = '';
+
+            const userPaymentNumber = document.getElementById('userPaymentNumber');
+            if (userPaymentNumber) userPaymentNumber.value = '';
+
+            const transactionId = document.getElementById('transactionId');
+            if (transactionId) transactionId.value = '';
+
+            const paymentDetailsSection = document.getElementById('paymentDetailsSection');
+            if (paymentDetailsSection) {
+                paymentDetailsSection.style.display = 'none';
+                paymentDetailsSection.innerHTML = ''; 
+            }
+
+            selectedPackage = null;
+            selectedPayment = null;
+            document.querySelectorAll('.package-item.selected, .payment-item.selected').forEach(el => el.classList.remove('selected'));
+        }
+
+        const slider = document.querySelector('.slider');
+        let currentSlide = 0, slideInterval;
+
+        function updateSliderPosition() {
+            if (!slider) return;
+            slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+        function nextSlide() {
+            const totalSlides = slider.children.length;
+            if (totalSlides === 0) return;
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateSliderPosition();
+        }
+
+        async function loadSlider() {
+            try {
+                const doc = await db.collection('settings').doc('slider').get();
+                slider.innerHTML = '';
+                if (doc.exists && doc.data().imageUrls) {
+                    const imageUrls = doc.data().imageUrls;
+                    imageUrls.forEach(url => {
+                        if(url){
+                           const slideDiv = document.createElement('div');
+                           slideDiv.className = 'slide';
+                           slideDiv.innerHTML = `<img src="${url}" alt="Promo Banner">`;
+                           slider.appendChild(slideDiv);
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error("Error loading slider images:", error);
+            } finally {
+                clearInterval(slideInterval);
+                if (slider.children.length > 1) {
+                    slideInterval = setInterval(nextSlide, 3000);
+                }
+            }
+        }
+        
+        function formatMessage(text) {
+            let formattedText = text;
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            const emailRegex = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi;
+            const phoneRegex = /\b(\+?88)?01[3-9][0-9]{8}\b/g;
+
+            formattedText = formattedText.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
+            formattedText = formattedText.replace(emailRegex, '<a href="mailto:$&">$&</a>');
+            formattedText = formattedText.replace(phoneRegex, '<a href="tel:$&">$&</a>');
+            
+            return formattedText;
+        }
+
+        // Support Chat Logic
+        const supportModal = document.getElementById('supportModal');
+        const supportBtn = document.getElementById('supportBtn');
+        const supportCloseBtn = document.getElementById('supportCloseBtn');
+        const sendMessageBtn = document.getElementById('sendMessageBtn');
+        const supportMessageInput = document.getElementById('supportMessageInput');
+        const supportChatBody = document.getElementById('supportChatBody');
+        let unsubscribeSupportChat;
+
+        supportBtn.onclick = () => {
+            supportModal.style.display = "flex";
+            if (unsubscribeSupportChat) unsubscribeSupportChat(); 
+
+            // orderBy removed from query
+            unsubscribeSupportChat = db.collection('supportMessages')
+                .where('userId', '==', currentUser.uid)
+                .onSnapshot(snapshot => {
+                    supportChatBody.innerHTML = '';
+                    if (snapshot.empty) {
+                        supportChatBody.innerHTML = '<p style="text-align:center; color: var(--secondary-text-color);">আপনার প্রশ্ন এখানে লিখুন</p>';
+                    }
+                    
+                    // Client-side sorting
+                    let messages = [];
+                    snapshot.forEach(doc => messages.push(doc.data()));
+                    
+                    // Sort by timestamp ascending (Oldest first)
+                    messages.sort((a, b) => {
+                         const timeA = a.timestamp ? a.timestamp.seconds : 0;
+                         const timeB = b.timestamp ? b.timestamp.seconds : 0;
+                         return timeA - timeB;
+                    });
+
+                    messages.forEach(messageData => {
+                        const messageDiv = document.createElement('div');
+                        const container = document.createElement('div');
+                        container.className = 'message-container';
+                        messageDiv.className = `message ${messageData.sender}`;
+                        messageDiv.innerHTML = formatMessage(messageData.message);
+                        container.appendChild(messageDiv);
+                        supportChatBody.appendChild(container);
+                    });
+                    supportChatBody.scrollTop = supportChatBody.scrollHeight;
+                });
+        };
+
+        supportCloseBtn.onclick = () => {
+            supportModal.style.display = "none";
+            if (unsubscribeSupportChat) {
+                unsubscribeSupportChat();
+                unsubscribeSupportChat = null;
+            }
+        };
+
+        sendMessageBtn.onclick = async () => {
+            const message = supportMessageInput.value.trim();
+            if (message === '') return;
+            supportMessageInput.value = '';
+
+            await db.collection('supportMessages').add({
+                userId: currentUser.uid,
+                userName: currentUser.displayName || currentUser.email,
+                message: message,
+                sender: 'user',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        };
+
+        // Dynamic Popup Modal
+        const dynamicPopup = document.getElementById('dynamicPopup');
+        const popupCloseBtn = document.getElementById('popupCloseBtn');
+
+        function initializePopupListener() {
+            db.collection('settings').doc('popup').onSnapshot(doc => {
+                const popupViewed = sessionStorage.getItem('popupViewed');
+                if (doc.exists && doc.data().isActive && !popupViewed) {
+                    const data = doc.data();
+                    document.getElementById('popupTitle').textContent = data.title || '';
+                    document.getElementById('popupMessage').textContent = data.message || '';
+                    const popupImage = document.getElementById('popupImage');
+                    if (data.imageUrl) {
+                        popupImage.src = data.imageUrl;
+                        popupImage.style.display = 'block';
+                    } else {
+                        popupImage.style.display = 'none';
+                    }
+                    dynamicPopup.style.display = 'flex';
+                }
+            });
+        }
+        popupCloseBtn.onclick = () => {
+            dynamicPopup.style.display = 'none';
+            sessionStorage.setItem('popupViewed', 'true');
+        };
+        
+        // Online Status Listener
+        function initializeOnlineStatusListener() {
+            const statusIndicator = document.getElementById('onlineStatus');
+            const statusText = document.getElementById('onlineStatusText');
+
+            db.collection('settings').doc('onlineStatus').onSnapshot(doc => {
+                if (doc.exists && doc.data().isOnline) {
+                    statusIndicator.classList.remove('offline');
+                    statusIndicator.classList.add('online');
+                    statusText.innerText = 'Online';
+                } else {
+                    statusIndicator.classList.remove('online');
+                    statusIndicator.classList.add('offline');
+                    statusText.innerText = 'Offline';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
